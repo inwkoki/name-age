@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>บันทึกข้อมูลสมาชิก</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      background: #f4f4f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .icon-wrap {
+      width: 56px; height: 56px;
+      background: #d1fae5;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 26px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 4px;
+    }
+
+    .sub {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .field input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #f9f9f9;
+      color: #111;
+      transition: border-color 0.15s, background 0.15s;
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: #666;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+    }
+
+    .field input[readonly] {
+      color: #888;
+      cursor: default;
+      background: #f0f0f0;
+    }
+
+    .serial-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 500;
+      color: #1d4ed8;
+    }
+
+    .serial-label {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .time-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      height: 48px;
+      background: #1a7a4a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .btn-submit:hover { background: #156038; }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
+
+    .status {
+      text-align: center;
+      font-size: 13px;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+      margin-bottom: 1rem;
+    }
+
+    .status.ok  { background: #d1fae5; color: #065f46; display: block; }
+    .status.err { background: #fee2e2; color: #991b1b; display: block; }
+    .status.loading { background: #f3f4f6; color: #555; display: block; }
+
+    .setup-card {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      font-size: 13px;
+      color: #92400e;
+    }
+
+    .setup-card strong { font-weight: 600; }
+
+    .url-field {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      border-radius: 8px;
+      border: 1px solid #e5e5e5;
+      background: #fff;
+      color: #111;
+      margin-top: 8px;
+      outline: none;
+    }
+
+    .url-field:focus { border-color: #999; }
+
+    .step {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 6px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 20px; height: 20px;
+      background: #d97706;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .records-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .records-header {
+      padding: 12px 1.25rem;
+      border-bottom: 1px solid #e5e5e5;
+      font-size: 12px;
+      font-weight: 500;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .record-item {
+      padding: 10px 1.25rem;
+      border-bottom: 1px solid #f0f0f0;
+      display: grid;
+      grid-template-columns: 90px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .record-item:last-child { border-bottom: none; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .record-sn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1d4ed8;
+    }
+
+    .record-name { color: #111; font-weight: 500; }
+
+    .record-time {
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    .empty-msg {
+      padding: 2rem;
+      text-align: center;
+      font-size: 13px;
+      color: #bbb;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="icon-wrap">📋</div>
+    <h1>บันทึกข้อมูลสมาชิก</h1>
+    <p class="sub">ระบบบันทึกข้อมูลลง Google Sheets</p>
+  </div>
+
+  <!-- Setup URL -->
+  <div class="setup-card">
+    <strong>⚠️ ตั้งค่า Google Apps Script URL</strong>
+    <div style="margin-top:8px;">
+      <div class="step"><div class="step-num">1</div><span>เปิด Google Sheet → Extensions → Apps Script</span></div>
+      <div class="step"><div class="step-num">2</div><span>วางโค้ด Apps Script แล้ว Deploy → New deployment → Web app</span></div>
+      <div class="step"><div class="step-num">3</div><span>ตั้ง "Who has access" เป็น Anyone → Copy URL มาวางด้านล่าง</span></div>
+    </div>
+    <input class="url-field" id="scriptUrl" type="text" value="https://script.google.com/macros/s/AKfycbwubTygLJvg0XEhQTDt78YnyvP-AV_GYahsXgqBC0DkcoIIYM5ruovKVNGrZ2p7PzFq5g/exec" readonly />
+  </div>
+
+  <!-- Form Card -->
+  <div class="card">
+    <div class="card-title">ข้อมูลการบันทึก</div>
+
+    <div style="margin-bottom: 14px;">
+      <div class="serial-label">Serial Number</div>
+      <div class="serial-badge">
+        <span style="font-size:16px;">🔢</span>
+        <span id="snDisplay">SN-0001</span>
+      </div>
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>ชื่อ (Name)</label>
+        <input type="text" id="name" placeholder="กรอกชื่อ" />
+      </div>
+      <div class="field">
+        <label>นามสกุล (Surname)</label>
+        <input type="text" id="surname" placeholder="กรอกนามสกุล" />
+      </div>
+      <div class="field">
+        <label>อายุ (Age)</label>
+        <input type="number" id="age" placeholder="อายุ" min="1" max="120" />
+      </div>
+    </div>
+
+    <div class="time-row">
+      <div class="field">
+        <label>เวลา (Time)</label>
+        <input type="text" id="timeField" readonly />
+      </div>
+      <div class="field">
+        <label>วันที่ (Date)</label>
+        <input type="text" id="dateField" readonly />
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+    <span>📤</span> บันทึกข้อมูล
+  </button>
+
+  <div class="status" id="status"></div>
+
+  <!-- Records list -->
+  <div class="records-card">
+    <div class="records-header">รายการที่บันทึกแล้ว (เซสชันนี้)</div>
+    <div id="recordsList">
+      <div class="empty-msg">ยังไม่มีข้อมูล</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let counter = 1;
+  let records = [];
+
+  function pad(n, w) { return String(n).padStart(w, '0'); }
+
+  function getNow() {
+    const d = new Date();
+    const time = pad(d.getHours(),2)+':'+pad(d.getMinutes(),2)+':'+pad(d.getSeconds(),2);
+    const date = pad(d.getDate(),2)+'/'+pad(d.getMonth()+1,2)+'/'+d.getFullYear();
+    return { time, date };
+  }
+
+  function updateClock() {
+    const { time, date } = getNow();
+    document.getElementById('timeField').value = time;
+    document.getElementById('dateField').value = date;
+  }
+
+  function updateSN() {
+    document.getElementById('snDisplay').textContent = 'SN-' + pad(counter, 4);
+  }
+
+  function showStatus(msg, type) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status ' + type;
+    if (type === 'ok') setTimeout(() => { el.className = 'status'; }, 3000);
+  }
+
+  function renderRecords() {
+    const el = document.getElementById('recordsList');
+    if (records.length === 0) {
+      el.innerHTML = '<div class="empty-msg">ยังไม่มีข้อมูล</div>';
+      return;
+    }
+    el.innerHTML = records.slice(-5).reverse().map(r =>
+      '<div class="record-item">' +
+        '<span class="record-sn">' + r.sn + '</span>' +
+        '<span class="record-name">' + r.name + ' ' + r.surname + '</span>' +
+        '<span class="record-time">' + r.time + '</span>' +
+      '</div>'
+    ).join('');
+  }
+
+  async function handleSubmit() {
+    const url     = document.getElementById('scriptUrl').value.trim();
+    const name    = document.getElementById('name').value.trim();
+    const surname = document.getElementById('surname').value.trim();
+    const age     = document.getElementById('age').value.trim();
+    const { time, date } = getNow();
+    const sn = 'SN-' + pad(counter, 4);
+
+    if (!name || !surname || !age) {
+      showStatus('⚠️ กรุณากรอกข้อมูลให้ครบ (ชื่อ, นามสกุล, อายุ)', 'err');
+      return;
+    }
+
+    if (!url || !url.includes('script.google.com')) {
+      showStatus('⚠️ กรุณาใส่ Google Apps Script URL ให้ถูกต้อง', 'err');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    showStatus('⏳ กำลังบันทึกข้อมูล...', 'loading');
+
+    const payload = { sn, name, surname, age, time, date };
+
+    try {
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      records.push(payload);
+      counter++;
+      updateSN();
+      renderRecords();
+      showStatus('✅ บันทึก ' + sn + ' สำเร็จ!', 'ok');
+      document.getElementById('name').value = '';
+      document.getElementById('surname').value = '';
+      document.getElementById('age').value = '';
+    } catch(e) {
+      showStatus('❌ เกิดข้อผิดพลาด: ' + e.message, 'err');
+    }
+
+    btn.disabled = false;
+  }
+
+  updateClock();
+  setInterval(updateClock, 1000);
+  updateSN();
+</script>
+</body>
+</html>

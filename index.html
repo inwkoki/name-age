@@ -1,464 +1,768 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>บันทึกข้อมูลสมาชิก</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OPD ER Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0c12;
+  --bg2:#10131c;
+  --bg3:#161924;
+  --border:#1e2235;
+  --border2:#252a40;
+  --text:#c9d1e8;
+  --text2:#6b748f;
+  --text3:#3d4460;
+  --accent:#3b82f6;
+  --accent2:#1d4ed8;
+  --green:#22c55e;
+  --green2:#15803d;
+  --red:#ef4444;
+  --yellow:#eab308;
+  --purple:#a855f7;
+  --cyan:#06b6d4;
+  --orange:#f97316;
+}
 
-    body {
-      font-family: 'Kanit', sans-serif;
-      background: #0f1117;
-      min-height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 2rem 1rem;
-      color: #e2e8f0;
-    }
+body{font-family:'Kanit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-    .wrap {
-      width: 100%;
-      max-width: 560px;
-    }
+/* ─── LOGIN ─── */
+#loginScreen{
+  position:fixed;inset:0;z-index:100;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+.login-box{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:20px;padding:2.5rem 2rem;width:360px;
+  box-shadow:0 0 60px rgba(59,130,246,0.08);
+}
+.login-logo{text-align:center;margin-bottom:2rem}
+.login-logo .icon{font-size:40px;margin-bottom:8px}
+.login-logo h2{font-size:20px;font-weight:600;color:#f1f5f9}
+.login-logo p{font-size:12px;color:var(--text2);margin-top:2px}
 
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
+.role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem}
+.role-tab{
+  padding:10px;border-radius:10px;border:1px solid var(--border2);
+  background:transparent;color:var(--text2);font-family:'Kanit',sans-serif;
+  font-size:13px;cursor:pointer;transition:all .2s;text-align:center;
+}
+.role-tab.active{background:var(--accent2);border-color:var(--accent);color:#fff}
+.role-tab:hover:not(.active){border-color:var(--border2);color:var(--text);background:var(--bg3)}
 
-    .icon-wrap {
-      width: 56px; height: 56px;
-      background: #0d2d1f;
-      border: 1px solid #1a5c3a;
-      border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1rem;
-      font-size: 26px;
-    }
+.lfield{margin-bottom:1rem}
+.lfield label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px}
+.lfield input,.lfield select{
+  width:100%;height:40px;padding:0 12px;
+  font-family:'Kanit',sans-serif;font-size:14px;
+  background:var(--bg);border:1px solid var(--border2);
+  color:var(--text);border-radius:8px;outline:none;
+}
+.lfield input:focus,.lfield select:focus{border-color:var(--accent)}
+.lfield select option{background:var(--bg2)}
 
-    h1 {
-      font-size: 22px;
-      font-weight: 600;
-      color: #f1f5f9;
-      margin-bottom: 4px;
-    }
+.btn-login{
+  width:100%;height:44px;background:var(--accent2);
+  border:1px solid var(--accent);color:#fff;
+  font-family:'Kanit',sans-serif;font-size:15px;font-weight:500;
+  border-radius:10px;cursor:pointer;transition:background .2s;
+}
+.btn-login:hover{background:var(--accent)}
+.login-err{color:var(--red);font-size:12px;text-align:center;margin-top:8px;display:none}
 
-    .sub {
-      font-size: 13px;
-      color: #64748b;
-    }
+/* ─── TOPBAR ─── */
+#app{display:none}
+.topbar{
+  height:56px;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;padding:0 1rem;position:sticky;top:0;z-index:50;
+}
+.topbar-logo{font-size:13px;font-weight:600;color:#f1f5f9;white-space:nowrap}
+.topbar-logo span{color:var(--accent);font-family:'JetBrains Mono',monospace}
+.topbar-date{font-size:12px;color:var(--text2);flex:1}
+.user-badge{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:8px;padding:5px 10px;font-size:12px;
+}
+.user-badge .role{color:var(--accent);font-size:10px;font-weight:500}
+.user-badge .name{color:var(--text);font-weight:500}
+.btn-logout{
+  padding:5px 12px;border-radius:8px;border:1px solid var(--border2);
+  background:transparent;color:var(--text2);font-family:'Kanit',sans-serif;
+  font-size:12px;cursor:pointer;transition:all .2s;
+}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
 
-    .card {
-      background: #1a1d27;
-      border: 1px solid #2a2d3a;
-      border-radius: 14px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
+/* ─── TOOLBAR ─── */
+.toolbar{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:.6rem 1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.btn-add{
+  display:flex;align-items:center;gap:6px;padding:7px 14px;
+  background:var(--green2);border:1px solid var(--green);color:#dcfce7;
+  font-family:'Kanit',sans-serif;font-size:13px;border-radius:8px;cursor:pointer;
+  transition:background .15s;white-space:nowrap;
+}
+.btn-add:hover{background:#166534}
+.btn-sync{
+  display:flex;align-items:center;gap:6px;padding:7px 14px;
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text2);
+  font-family:'Kanit',sans-serif;font-size:13px;border-radius:8px;cursor:pointer;
+  transition:all .15s;white-space:nowrap;
+}
+.btn-sync:hover{border-color:var(--accent);color:var(--accent)}
+.sync-status{font-size:11px;color:var(--text2);margin-left:4px}
+.sync-status.ok{color:var(--green)}
+.sync-status.err{color:var(--red)}
+.spacer{flex:1}
+.search-box{
+  height:32px;padding:0 10px;font-family:'Kanit',sans-serif;font-size:13px;
+  background:var(--bg);border:1px solid var(--border2);color:var(--text);
+  border-radius:8px;outline:none;width:180px;
+}
+.search-box:focus{border-color:var(--accent)}
 
-    .card-title {
-      font-size: 11px;
-      font-weight: 500;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 1rem;
-    }
+/* ─── TABLE WRAPPER ─── */
+.table-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 112px)}
 
-    .field-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+table{border-collapse:collapse;width:max-content;min-width:100%;font-size:12px}
 
-    .field label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      color: #64748b;
-      margin-bottom: 5px;
-    }
+/* Header rows */
+thead tr th{
+  background:var(--bg3);border:1px solid var(--border);
+  padding:5px 6px;white-space:nowrap;font-weight:500;color:var(--text2);
+  font-size:11px;letter-spacing:.03em;position:sticky;top:0;z-index:10;
+}
+thead tr:first-child th{color:var(--accent);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
 
-    .field input, .field input[type="time"], .field input[type="date"] {
-      width: 100%;
-      height: 40px;
-      padding: 0 12px;
-      font-family: 'Kanit', sans-serif;
-      font-size: 14px;
-      border-radius: 8px;
-      border: 1px solid #2a2d3a;
-      background: #0f1117;
-      color: #e2e8f0;
-      transition: border-color 0.15s, background 0.15s;
-      outline: none;
-    }
+/* sticky cols */
+th.s1,td.s1{position:sticky;left:0;z-index:5;background:var(--bg3)}
+th.s2,td.s2{position:sticky;left:32px;z-index:5;background:var(--bg3)}
+th.s3,td.s3{position:sticky;left:64px;z-index:5;background:var(--bg3)}
 
-    .field input:focus {
-      border-color: #3d8b5f;
-      background: #12151e;
-      box-shadow: 0 0 0 3px rgba(61,139,95,0.12);
-    }
+/* Body rows */
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:hover td{background:rgba(59,130,246,0.04)}
+tbody tr.my-row td{background:rgba(34,197,94,0.04)}
+tbody tr.my-row:hover td{background:rgba(34,197,94,0.07)}
 
-    /* datetime inputs color scheme fix */
-    input[type="time"]::-webkit-calendar-picker-indicator,
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      filter: invert(1) opacity(0.4);
-      cursor: pointer;
-    }
+td{
+  padding:4px 6px;border-right:1px solid var(--border);
+  color:var(--text);vertical-align:middle;white-space:nowrap;
+}
+td.s1,td.s2,td.s3{background:var(--bg2)}
+tbody tr:hover td.s1,tbody tr:hover td.s2,tbody tr:hover td.s3{background:#13172a}
+tbody tr.my-row td.s1,tbody tr.my-row td.s2,tbody tr.my-row td.s3{background:#0d1a0f}
 
-    .sn-row {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-      margin-bottom: 14px;
-    }
+/* editable cells */
+td.editable{cursor:pointer;position:relative}
+td.editable:hover::after{
+  content:'✏️';position:absolute;right:2px;top:50%;transform:translateY(-50%);
+  font-size:9px;opacity:.5;
+}
+td input.cell-input,td select.cell-input{
+  width:100%;height:26px;padding:0 4px;
+  font-family:'Kanit',sans-serif;font-size:12px;
+  background:#0d1829;border:1px solid var(--accent);
+  color:#fff;border-radius:4px;outline:none;
+}
+td select.cell-input option{background:var(--bg2)}
 
-    .sn-row .field { flex: 1; }
+/* checkboxes */
+td.cb-cell{text-align:center}
+td.cb-cell input[type=checkbox]{
+  width:14px;height:14px;cursor:pointer;accent-color:var(--green);
+}
 
-    .sn-prefix {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      color: #3d8b5f;
-      padding: 0 2px 10px;
-      white-space: nowrap;
-    }
+/* row num */
+.row-num{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--text3);text-align:center;
+}
 
-    .field input.sn-input {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 16px;
-      font-weight: 500;
-      color: #4ade80;
-      background: #0d1f15;
-      border-color: #1a5c3a;
-      letter-spacing: 0.05em;
-    }
+/* triage colors */
+.triage-ae{color:var(--red);font-weight:600}
+.triage-resus{color:var(--purple);font-weight:600}
 
-    .field input.sn-input:focus {
-      border-color: #3d8b5f;
-      box-shadow: 0 0 0 3px rgba(74,222,128,0.08);
-    }
+/* action btns */
+.btn-edit,.btn-del{
+  padding:2px 8px;border-radius:4px;font-size:11px;font-family:'Kanit',sans-serif;
+  cursor:pointer;border:1px solid;transition:all .15s;
+}
+.btn-edit{background:transparent;border-color:var(--accent);color:var(--accent)}
+.btn-edit:hover{background:var(--accent);color:#fff}
+.btn-del{background:transparent;border-color:#3d1515;color:var(--red)}
+.btn-del:hover{background:var(--red);color:#fff}
 
-    .sn-preview {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: #3d8b5f;
-      margin-top: 5px;
-    }
+/* ─── MODAL ─── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;
+  display:none;align-items:center;justify-content:center;padding:1rem;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:16px;
+  width:100%;max-width:700px;max-height:90vh;overflow-y:auto;
+}
+.modal-header{
+  padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--bg2);z-index:5;
+}
+.modal-header h3{font-size:16px;font-weight:600;color:#f1f5f9}
+.modal-close{
+  width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);
+  background:transparent;color:var(--text2);cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-close:hover{border-color:var(--red);color:var(--red)}
+.modal-body{padding:1.5rem}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-grid.col3{grid-template-columns:1fr 1fr 1fr}
+.modal-grid.col1{grid-template-columns:1fr}
+.mfield label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.mfield input,.mfield select{
+  width:100%;height:36px;padding:0 10px;font-family:'Kanit',sans-serif;font-size:13px;
+  background:var(--bg);border:1px solid var(--border2);color:var(--text);
+  border-radius:7px;outline:none;
+}
+.mfield input:focus,.mfield select:focus{border-color:var(--accent)}
+.mfield select option{background:var(--bg2)}
+.mfield input[type=checkbox]{width:16px;height:16px;margin-top:8px;accent-color:var(--green)}
 
-    .time-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 12px;
-    }
+.section-label{
+  font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;
+  letter-spacing:.08em;margin:1rem 0 .5rem;border-bottom:1px solid var(--border);
+  padding-bottom:4px;
+}
+.modal-footer{
+  padding:1rem 1.5rem;border-top:1px solid var(--border);
+  display:flex;gap:8px;justify-content:flex-end;
+  position:sticky;bottom:0;background:var(--bg2);
+}
+.btn-save{
+  padding:8px 24px;background:var(--green2);border:1px solid var(--green);
+  color:#dcfce7;font-family:'Kanit',sans-serif;font-size:14px;
+  border-radius:8px;cursor:pointer;transition:background .15s;
+}
+.btn-save:hover{background:#166534}
+.btn-cancel{
+  padding:8px 18px;background:transparent;border:1px solid var(--border2);
+  color:var(--text2);font-family:'Kanit',sans-serif;font-size:14px;
+  border-radius:8px;cursor:pointer;
+}
+.btn-cancel:hover{border-color:var(--text2);color:var(--text)}
 
-    .btn-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 5px;
-    }
+/* toast */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:300;
+  padding:10px 18px;border-radius:10px;font-size:13px;
+  background:var(--bg2);border:1px solid var(--border2);
+  color:var(--text);transform:translateY(80px);opacity:0;
+  transition:all .3s;pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red);color:var(--red)}
 
-    .btn-now {
-      font-family: 'Kanit', sans-serif;
-      font-size: 11px;
-      padding: 3px 10px;
-      border-radius: 6px;
-      border: 1px solid #2a2d3a;
-      background: #1a1d27;
-      color: #64748b;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+/* observe tags */
+.obs-tag{
+  display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;
+  background:rgba(234,179,8,.15);color:var(--yellow);border:1px solid rgba(234,179,8,.3);
+}
+.disp-tag{
+  display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;
+}
+.disp-admit{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.disp-opd{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.disp-refer{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.3)}
+.disp-dco{background:rgba(6,182,212,.15);color:var(--cyan);border:1px solid rgba(6,182,212,.3)}
 
-    .btn-now:hover { border-color: #3d8b5f; color: #4ade80; }
-
-    .btn-submit {
-      width: 100%;
-      height: 48px;
-      background: #166534;
-      color: #dcfce7;
-      border: 1px solid #1a7a4a;
-      border-radius: 8px;
-      font-family: 'Kanit', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 1rem;
-    }
-
-    .btn-submit:hover { background: #15803d; }
-    .btn-submit:active { transform: scale(0.98); }
-    .btn-submit:disabled { background: #1e2330; color: #475569; border-color: #2a2d3a; cursor: not-allowed; }
-
-    .status {
-      text-align: center;
-      font-size: 13px;
-      padding: 10px;
-      border-radius: 8px;
-      display: none;
-      margin-bottom: 1rem;
-    }
-
-    .status.ok      { background: #0d2d1f; color: #4ade80; border: 1px solid #1a5c3a; display: block; }
-    .status.err     { background: #2d0d0d; color: #f87171; border: 1px solid #5c1a1a; display: block; }
-    .status.loading { background: #1a1d27; color: #64748b; border: 1px solid #2a2d3a; display: block; }
-
-    .records-card {
-      background: #1a1d27;
-      border: 1px solid #2a2d3a;
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .records-header {
-      padding: 12px 1.25rem;
-      border-bottom: 1px solid #2a2d3a;
-      font-size: 11px;
-      font-weight: 500;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .record-item {
-      padding: 10px 1.25rem;
-      border-bottom: 1px solid #1e2130;
-      display: grid;
-      grid-template-columns: 100px 1fr auto;
-      gap: 8px;
-      align-items: center;
-      font-size: 13px;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .record-item:last-child { border-bottom: none; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .record-sn {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      font-weight: 500;
-      color: #4ade80;
-    }
-
-    .record-name { color: #cbd5e1; font-weight: 500; }
-
-    .record-time {
-      font-size: 11px;
-      color: #475569;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .empty-msg {
-      padding: 2rem;
-      text-align: center;
-      font-size: 13px;
-      color: #334155;
-    }
-
-    .divider {
-      height: 1px;
-      background: #2a2d3a;
-      margin: 4px 0 12px;
-    }
-  </style>
+.empty-row td{text-align:center;padding:2rem;color:var(--text3);font-size:13px}
+</style>
 </head>
 <body>
-<div class="wrap">
 
-  <div class="header">
-    <div class="icon-wrap">📋</div>
-    <h1>บันทึกข้อมูลสมาชิก</h1>
-    <p class="sub">ระบบบันทึกข้อมูลลง Google Sheets</p>
+<!-- ═══ LOGIN ═══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="icon">🏥</div>
+      <h2>OPD ER Tracker</h2>
+      <p>ห้องฉุกเฉิน — ระบบบันทึกผู้ป่วย</p>
+    </div>
+
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="setRole('doctor')" id="tab-doctor">👨‍⚕️ แพทย์</button>
+      <button class="role-tab" onclick="setRole('nurse')" id="tab-nurse">👩‍⚕️ พยาบาล</button>
+    </div>
+
+    <div class="lfield">
+      <label>ชื่อผู้ใช้</label>
+      <select id="loginName">
+        <option value="">-- เลือกชื่อ --</option>
+      </select>
+    </div>
+    <div class="lfield">
+      <label>รหัสผ่าน</label>
+      <input type="password" id="loginPass" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="btn-login" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="login-err" id="loginErr">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
   </div>
-
-  <!-- Form Card -->
-  <div class="card">
-    <div class="card-title">Serial Number</div>
-
-    <div class="field">
-      <label>หมายเลข SN</label>
-      <input type="number" id="snNum" class="sn-input" value="1" min="1" max="9999" oninput="updateSnPreview()" />
-      <div class="sn-preview" id="snPreview">→ SN-0001</div>
-    </div>
-
-    <div class="divider"></div>
-    <div class="card-title">ข้อมูลส่วนตัว</div>
-
-    <div class="field-grid">
-      <div class="field">
-        <label>ชื่อ (Name)</label>
-        <input type="text" id="name" placeholder="กรอกชื่อ" />
-      </div>
-      <div class="field">
-        <label>นามสกุล (Surname)</label>
-        <input type="text" id="surname" placeholder="กรอกนามสกุล" />
-      </div>
-      <div class="field">
-        <label>อายุ (Age)</label>
-        <input type="number" id="age" placeholder="อายุ" min="1" max="120" />
-      </div>
-    </div>
-
-    <div class="divider" style="margin-top:14px;"></div>
-    <div class="card-title">วันที่ และ เวลา</div>
-
-    <div class="time-row">
-      <div class="field">
-        <label>เวลา (Time)</label>
-        <input type="time" id="timeField" />
-        <div class="btn-row">
-          <button class="btn-now" onclick="setNowTime()">ตอนนี้</button>
-        </div>
-      </div>
-      <div class="field">
-        <label>วันที่ (Date)</label>
-        <input type="date" id="dateField" />
-        <div class="btn-row">
-          <button class="btn-now" onclick="setNowDate()">วันนี้</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
-    <span>📤</span> บันทึกข้อมูล
-  </button>
-
-  <div class="status" id="status"></div>
-
-  <!-- Records list -->
-  <div class="records-card">
-    <div class="records-header">รายการที่บันทึกแล้ว (เซสชันนี้)</div>
-    <div id="recordsList">
-      <div class="empty-msg">ยังไม่มีข้อมูล</div>
-    </div>
-  </div>
-
 </div>
 
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">🏥 <span>OPD</span> ER</div>
+    <div class="topbar-date" id="topbarDate"></div>
+    <div class="user-badge">
+      <span class="role" id="userRoleBadge"></span>
+      <span class="name" id="userNameBadge"></span>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">ออกจากระบบ</button>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn-add" onclick="openAddModal()">＋ เพิ่มผู้ป่วย</button>
+    <button class="btn-sync" onclick="syncToSheets()">☁ Sync to Sheets</button>
+    <span class="sync-status" id="syncStatus"></span>
+    <div class="spacer"></div>
+    <input class="search-box" type="text" placeholder="🔍 ค้นหา HN / ชื่อ / Dx..." oninput="filterRows(this.value)"/>
+  </div>
+
+  <div class="table-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <!-- group headers -->
+          <th class="s1" colspan="1"></th>
+          <th class="s2" colspan="1"></th>
+          <th class="s3" colspan="1"></th>
+          <th colspan="6" style="color:var(--cyan);border-left:2px solid var(--border2)">ข้อมูลผู้ป่วย</th>
+          <th colspan="2" style="color:var(--yellow);border-left:2px solid var(--border2)">Triage</th>
+          <th colspan="6" style="color:var(--purple);border-left:2px solid var(--border2)">เวลา Consult</th>
+          <th colspan="5" style="color:var(--orange);border-left:2px solid var(--border2)">Observe for</th>
+          <th colspan="3" style="color:var(--accent);border-left:2px solid var(--border2)">Investigate</th>
+          <th colspan="7" style="color:var(--green);border-left:2px solid var(--border2)">จำหน่ายโดย</th>
+          <th colspan="3" style="border-left:2px solid var(--border2)">เวลา</th>
+          <th colspan="1"></th>
+        </tr>
+        <tr>
+          <th class="s1" style="min-width:32px">#</th>
+          <th class="s2" style="min-width:32px">ยกออก</th>
+          <th class="s3" style="min-width:55px">Triage</th>
+          <th style="min-width:55px;border-left:2px solid var(--border2)">บจ.AE</th>
+          <th style="min-width:55px">มา Obs.</th>
+          <th style="min-width:80px">HN</th>
+          <th style="min-width:130px">ชื่อ-สกุล</th>
+          <th style="min-width:55px">เพศ/อายุ</th>
+          <th style="min-width:140px">Diagnosis</th>
+          <th style="min-width:55px;border-left:2px solid var(--border2)">เจ้าน่าที่รับ</th>
+          <th style="min-width:55px">เวลา AE</th>
+          <!-- consult -->
+          <th style="min-width:55px;border-left:2px solid var(--border2)">RN1 รับ</th>
+          <th style="min-width:55px">RN1 เวลา</th>
+          <th style="min-width:55px">RN2 พรนมา</th>
+          <th style="min-width:55px">RN3 ชนม์กศนม</th>
+          <th style="min-width:55px">PN มาโนช</th>
+          <th style="min-width:55px">Aid ปราณี</th>
+          <!-- observe -->
+          <th style="min-width:45px;border-left:2px solid var(--border2)">Lab</th>
+          <th style="min-width:45px">BP</th>
+          <th style="min-width:55px">โอเตยี่ admit</th>
+          <th style="min-width:45px">ป่วย</th>
+          <th style="min-width:55px">อื่นๆ</th>
+          <!-- invest -->
+          <th style="min-width:55px;border-left:2px solid var(--border2)">เวลา</th>
+          <th style="min-width:65px">Investigate เพิ่ม</th>
+          <th style="min-width:45px">Jesus</th>
+          <!-- discharge -->
+          <th style="min-width:45px;border-left:2px solid var(--border2)">OPD</th>
+          <th style="min-width:45px">ส่ง</th>
+          <th style="min-width:45px">Refer</th>
+          <th style="min-width:45px">รพ.</th>
+          <th style="min-width:55px">Admward</th>
+          <th style="min-width:45px">D/C</th>
+          <th style="min-width:55px">อื่นๆ</th>
+          <!-- time -->
+          <th style="min-width:70px;border-left:2px solid var(--border2)">เวลาออกจาก observe</th>
+          <th style="min-width:55px">เจ้าน่าที่</th>
+          <th style="min-width:70px">เวลารวม/นาที</th>
+          <!-- note + action -->
+          <th style="min-width:70px">NOTE</th>
+          <th style="min-width:75px">Action</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr class="empty-row"><td colspan="40">ยังไม่มีข้อมูล — กด "+ เพิ่มผู้ป่วย" เพื่อเริ่มบันทึก</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ MODAL ═══ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">เพิ่มผู้ป่วย</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="section-label">ข้อมูลผู้ป่วย</div>
+      <div class="modal-grid col3">
+        <div class="mfield"><label>HN</label><input id="f_hn" type="text" placeholder="C1234"/></div>
+        <div class="mfield"><label>ชื่อ</label><input id="f_name" type="text" placeholder="ชื่อ นามสกุล"/></div>
+        <div class="mfield"><label>เพศ</label>
+          <select id="f_sex"><option>ชาย</option><option>หญิง</option></select>
+        </div>
+        <div class="mfield"><label>อายุ</label><input id="f_age" type="number" placeholder="0"/></div>
+        <div class="mfield col-span2"><label>Diagnosis</label><input id="f_dx" type="text" placeholder="Diagnosis"/></div>
+      </div>
+
+      <div class="section-label">Triage & เวลา</div>
+      <div class="modal-grid col3">
+        <div class="mfield"><label>Triage</label>
+          <select id="f_triage"><option>AE</option><option>Resus</option></select>
+        </div>
+        <div class="mfield"><label>บจ.AE</label><input id="f_bj_ae" type="time"/></div>
+        <div class="mfield"><label>มา Obs.</label><input id="f_ma_obs" type="time"/></div>
+        <div class="mfield"><label>เจ้าน่าที่รับ</label><input id="f_owner_in" type="text"/></div>
+        <div class="mfield"><label>เวลา AE</label><input id="f_ae_time" type="time"/></div>
+      </div>
+
+      <div class="section-label">เวลา Consult</div>
+      <div class="modal-grid col3">
+        <div class="mfield"><label>RN1 รับ</label><input id="f_rn1_recv" type="text"/></div>
+        <div class="mfield"><label>RN1 เวลา</label><input id="f_rn1_time" type="time"/></div>
+        <div class="mfield"><label>RN2 พรนมา</label><input id="f_rn2" type="time"/></div>
+        <div class="mfield"><label>RN3 ชนม์กศนม</label><input id="f_rn3" type="time"/></div>
+        <div class="mfield"><label>PN มาโนช</label><input id="f_pn" type="time"/></div>
+        <div class="mfield"><label>Aid ปราณี</label><input id="f_aid" type="time"/></div>
+      </div>
+
+      <div class="section-label">Observe for</div>
+      <div class="modal-grid">
+        <div class="mfield" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="f_obs_lab"/><label for="f_obs_lab" style="margin:0">Lab</label>
+        </div>
+        <div class="mfield" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="f_obs_bp"/><label for="f_obs_bp" style="margin:0">BP</label>
+        </div>
+        <div class="mfield" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="f_obs_admit"/><label for="f_obs_admit" style="margin:0">โอเตยี่ admit</label>
+        </div>
+        <div class="mfield" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="f_obs_sick"/><label for="f_obs_sick" style="margin:0">ป่วย</label>
+        </div>
+        <div class="mfield"><label>อื่นๆ (Observe)</label><input id="f_obs_other" type="text"/></div>
+      </div>
+
+      <div class="section-label">Investigate</div>
+      <div class="modal-grid col3">
+        <div class="mfield"><label>เวลา</label><input id="f_inv_time" type="time"/></div>
+        <div class="mfield"><label>Investigate เพิ่ม</label><input id="f_inv_extra" type="text" placeholder="Lab NSI..."/></div>
+        <div class="mfield" style="display:flex;align-items:center;gap:8px;padding-top:16px">
+          <input type="checkbox" id="f_jesus"/><label for="f_jesus" style="margin:0">Jesus</label>
+        </div>
+      </div>
+
+      <div class="section-label">จำหน่ายโดย</div>
+      <div class="modal-grid">
+        <div class="mfield" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="f_d_opd"/><label for="f_d_opd" style="margin:0">OPD</label>
+        </div>
+        <div class="mfield" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="f_d_send"/><label for="f_d_send" style="margin:0">ส่ง</label>
+        </div>
+        <div class="mfield" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="f_d_refer"/><label for="f_d_refer" style="margin:0">Refer</label>
+        </div>
+        <div class="mfield" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="f_d_rph"/><label for="f_d_rph" style="margin:0">รพ.</label>
+        </div>
+        <div class="mfield"><label>Admward</label><input id="f_d_admward" type="text" placeholder="AE3..."/></div>
+        <div class="mfield" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="f_d_dc"/><label for="f_d_dc" style="margin:0">D/C</label>
+        </div>
+        <div class="mfield"><label>อื่นๆ (จำหน่าย)</label><input id="f_d_other" type="text"/></div>
+      </div>
+
+      <div class="section-label">เวลาสรุป</div>
+      <div class="modal-grid col3">
+        <div class="mfield"><label>เวลาออกจาก Observe</label><input id="f_time_out" type="time"/></div>
+        <div class="mfield"><label>เจ้าน่าที่</label><input id="f_owner_out" type="text"/></div>
+        <div class="mfield"><label>เวลารวม (นาที)</label><input id="f_total_min" type="number" placeholder="0"/></div>
+      </div>
+
+      <div class="section-label">หมายเหตุ</div>
+      <div class="modal-grid col1">
+        <div class="mfield"><label>NOTE</label><input id="f_note" type="text"/></div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn-save" onclick="saveRow()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwubTygLJvg0XEhQTDt78YnyvP-AV_GYahsXgqBC0DkcoIIYM5ruovKVNGrZ2p7PzFq5g/exec';
-  let records = [];
+// ─── CONFIG ───
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwubTygLJvg0XEhQTDt78YnyvP-AV_GYahsXgqBC0DkcoIIYM5ruovKVNGrZ2p7PzFq5g/exec';
 
-  function pad(n, w) { return String(n).padStart(w, '0'); }
+// ─── USERS ───
+const USERS = {
+  doctor: [
+    {name:'นพ.สมชาย ใจดี',   pass:'doctor1'},
+    {name:'พญ.สุดา รักษา',   pass:'doctor2'},
+    {name:'นพ.วิชัย เก่งกาจ', pass:'doctor3'},
+  ],
+  nurse: [
+    {name:'พย.พรนมา สุขสันต์',   pass:'nurse1'},
+    {name:'พย.ชนม์กศนม แก้วใส',   pass:'nurse2'},
+    {name:'PN มาโนช ดีใจ',        pass:'nurse3'},
+    {name:'Aid ปราณี ยิ้มแย้ม',   pass:'nurse4'},
+  ]
+};
 
-  function updateSnPreview() {
-    const n = parseInt(document.getElementById('snNum').value) || 1;
-    document.getElementById('snPreview').textContent = '→ SN-' + pad(n, 4);
+let currentRole = 'doctor';
+let currentUser = null;
+let rows = [];
+let editingId = null;
+let searchTerm = '';
+
+// ─── LOGIN ───
+function setRole(role) {
+  currentRole = role;
+  document.getElementById('tab-doctor').classList.toggle('active', role==='doctor');
+  document.getElementById('tab-nurse').classList.toggle('active',  role==='nurse');
+  const sel = document.getElementById('loginName');
+  sel.innerHTML = '<option value="">-- เลือกชื่อ --</option>';
+  USERS[role].forEach(u => sel.innerHTML += `<option value="${u.name}">${u.name}</option>`);
+}
+
+function doLogin() {
+  const name = document.getElementById('loginName').value;
+  const pass = document.getElementById('loginPass').value;
+  const err  = document.getElementById('loginErr');
+  if (!name) { err.style.display='block'; err.textContent='กรุณาเลือกชื่อ'; return; }
+  const found = USERS[currentRole].find(u => u.name===name && u.pass===pass);
+  if (!found) { err.style.display='block'; err.textContent='รหัสผ่านไม่ถูกต้อง'; return; }
+  err.style.display='none';
+  currentUser = {name: found.name, role: currentRole};
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('userNameBadge').textContent = found.name;
+  document.getElementById('userRoleBadge').textContent = currentRole==='doctor'?'แพทย์':'พยาบาล';
+  updateTopbarDate();
+  setInterval(updateTopbarDate, 30000);
+  renderTable();
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginName').value='';
+}
+
+function updateTopbarDate() {
+  const d = new Date();
+  const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  document.getElementById('topbarDate').textContent =
+    `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} พ.ศ.${d.getFullYear()+543}  |  ${pad2(d.getHours())}:${pad2(d.getMinutes())} น.`;
+}
+
+// ─── UTILS ───
+function pad2(n){return String(n).padStart(2,'0')}
+function uid(){return Date.now()+'_'+Math.random().toString(36).slice(2,6)}
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+type+' show';
+  setTimeout(()=>t.className='toast',2500);
+}
+
+// ─── TABLE ───
+function renderTable(filter='') {
+  const tbody = document.getElementById('tableBody');
+  const filtered = filter
+    ? rows.filter(r =>
+        (r.hn||'').includes(filter)||
+        (r.name||'').includes(filter)||
+        (r.dx||'').includes(filter))
+    : rows;
+
+  if(!filtered.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="40">ยังไม่มีข้อมูล — กด "+ เพิ่มผู้ป่วย" เพื่อเริ่มบันทึก</td></tr>';
+    return;
   }
 
-  function getSN() {
-    const n = parseInt(document.getElementById('snNum').value) || 1;
-    return 'SN-' + pad(n, 4);
+  tbody.innerHTML = filtered.map((r,i) => {
+    const isMyRow = r.createdBy === currentUser?.name;
+    const canEdit = isMyRow || currentUser?.role==='doctor';
+    const triClass = r.triage==='Resus'?'triage-resus':'triage-ae';
+
+    const dispTag = r.d_opd  ? '<span class="disp-tag disp-opd">OPD</span>'
+      : r.d_refer ? '<span class="disp-tag disp-refer">Refer</span>'
+      : r.d_admward ? `<span class="disp-tag disp-admit">${r.d_admward}</span>`
+      : r.d_dc ? '<span class="disp-tag disp-dco">D/C</span>'
+      : '';
+
+    return `<tr class="${isMyRow?'my-row':''}" data-id="${r.id}">
+      <td class="s1 row-num">${i+1}</td>
+      <td class="s2 cb-cell"><input type="checkbox" ${r.removed?'checked':''} ${canEdit?'':'disabled'} onchange="toggleRemove('${r.id}',this.checked)"/></td>
+      <td class="s3"><span class="${triClass}">${r.triage||''}</span></td>
+      <td>${r.bj_ae||''}</td>
+      <td>${r.ma_obs||''}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${r.hn||''}</td>
+      <td>${r.name||''}</td>
+      <td>${r.sex||''} ${r.age||''}</td>
+      <td><b>${r.dx||''}</b></td>
+      <td>${r.owner_in||''}</td>
+      <td>${r.ae_time||''}</td>
+      <td>${r.rn1_recv||''}</td>
+      <td>${r.rn1_time||''}</td>
+      <td>${r.rn2||''}</td>
+      <td>${r.rn3||''}</td>
+      <td>${r.pn||''}</td>
+      <td>${r.aid||''}</td>
+      <td class="cb-cell">${r.obs_lab?'✓':''}</td>
+      <td class="cb-cell">${r.obs_bp?'✓':''}</td>
+      <td class="cb-cell">${r.obs_admit?'✓':''}</td>
+      <td class="cb-cell">${r.obs_sick?'✓':''}</td>
+      <td>${r.obs_other||''}</td>
+      <td>${r.inv_time||''}</td>
+      <td style="font-size:10px;color:var(--yellow)">${r.inv_extra||''}</td>
+      <td class="cb-cell">${r.jesus?'✓':''}</td>
+      <td class="cb-cell">${r.d_opd?'✓':''}</td>
+      <td class="cb-cell">${r.d_send?'✓':''}</td>
+      <td class="cb-cell">${r.d_refer?'✓':''}</td>
+      <td class="cb-cell">${r.d_rph?'✓':''}</td>
+      <td style="font-size:10px">${r.d_admward||''}</td>
+      <td class="cb-cell">${r.d_dc?'✓':''}</td>
+      <td style="font-size:10px">${r.d_other||''}</td>
+      <td>${r.time_out||''}</td>
+      <td>${r.owner_out||''}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${r.total_min||''}</td>
+      <td style="font-size:10px;color:var(--text2)">${r.note||''}</td>
+      <td>
+        ${canEdit?`<button class="btn-edit" onclick="openEditModal('${r.id}')">แก้ไข</button>
+        <button class="btn-del" onclick="deleteRow('${r.id}')">ลบ</button>`:'<span style="font-size:10px;color:var(--text3)">—</span>'}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterRows(val) {
+  searchTerm = val;
+  renderTable(val);
+}
+
+function toggleRemove(id, val) {
+  const r = rows.find(x=>x.id===id);
+  if(r){ r.removed=val; renderTable(searchTerm); }
+}
+
+function deleteRow(id) {
+  if(!confirm('ลบรายการนี้?')) return;
+  rows = rows.filter(r=>r.id!==id);
+  renderTable(searchTerm);
+  showToast('ลบรายการแล้ว');
+}
+
+// ─── MODAL ───
+const FIELDS = ['hn','name','sex','age','dx','triage','bj_ae','ma_obs','owner_in','ae_time',
+  'rn1_recv','rn1_time','rn2','rn3','pn','aid',
+  'obs_lab','obs_bp','obs_admit','obs_sick','obs_other',
+  'inv_time','inv_extra','jesus',
+  'd_opd','d_send','d_refer','d_rph','d_admward','d_dc','d_other',
+  'time_out','owner_out','total_min','note'];
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'เพิ่มผู้ป่วย';
+  FIELDS.forEach(f => {
+    const el = document.getElementById('f_'+f);
+    if(!el) return;
+    if(el.type==='checkbox') el.checked=false;
+    else el.value='';
+  });
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function openEditModal(id) {
+  const r = rows.find(x=>x.id===id);
+  if(!r) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'แก้ไขรายการ — '+r.hn;
+  FIELDS.forEach(f => {
+    const el = document.getElementById('f_'+f);
+    if(!el) return;
+    if(el.type==='checkbox') el.checked = !!r[f];
+    else el.value = r[f]||'';
+  });
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+function saveRow() {
+  const data = { id: editingId||uid(), createdBy: currentUser.name, createdRole: currentUser.role };
+  FIELDS.forEach(f => {
+    const el = document.getElementById('f_'+f);
+    if(!el) return;
+    data[f] = el.type==='checkbox' ? el.checked : el.value;
+  });
+  if(!data.hn && !data.name){showToast('กรุณากรอก HN หรือชื่อผู้ป่วย','err');return;}
+
+  if(editingId) {
+    const i = rows.findIndex(r=>r.id===editingId);
+    if(i>=0) rows[i] = {...rows[i], ...data};
+    showToast('แก้ไขรายการแล้ว ✓');
+  } else {
+    rows.push(data);
+    showToast('เพิ่มผู้ป่วยแล้ว ✓');
   }
+  closeModal();
+  renderTable(searchTerm);
+}
 
-  function setNowTime() {
-    const d = new Date();
-    document.getElementById('timeField').value = pad(d.getHours(),2)+':'+pad(d.getMinutes(),2);
+// ─── SYNC ───
+async function syncToSheets() {
+  const status = document.getElementById('syncStatus');
+  status.className='sync-status';
+  status.textContent='⏳ กำลัง Sync...';
+  try {
+    await fetch(SCRIPT_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ type:'opd_batch', rows, syncedBy: currentUser.name })
+    });
+    status.className='sync-status ok';
+    status.textContent='✓ Sync สำเร็จ '+new Date().toLocaleTimeString('th-TH');
+  } catch(e) {
+    status.className='sync-status err';
+    status.textContent='✗ Sync ล้มเหลว';
   }
+}
 
-  function setNowDate() {
-    const d = new Date();
-    document.getElementById('dateField').value = d.getFullYear()+'-'+pad(d.getMonth()+1,2)+'-'+pad(d.getDate(),2);
-  }
-
-  function getDisplayDate(val) {
-    if (!val) return '';
-    const [y,m,day] = val.split('-');
-    return day+'/'+m+'/'+y;
-  }
-
-  function showStatus(msg, type) {
-    const el = document.getElementById('status');
-    el.textContent = msg;
-    el.className = 'status ' + type;
-    if (type === 'ok') setTimeout(() => { el.className = 'status'; }, 3000);
-  }
-
-  function renderRecords() {
-    const el = document.getElementById('recordsList');
-    if (records.length === 0) {
-      el.innerHTML = '<div class="empty-msg">ยังไม่มีข้อมูล</div>';
-      return;
-    }
-    el.innerHTML = records.slice(-5).reverse().map(r =>
-      '<div class="record-item">' +
-        '<span class="record-sn">' + r.sn + '</span>' +
-        '<span class="record-name">' + r.name + ' ' + r.surname + '</span>' +
-        '<span class="record-time">' + r.time + '</span>' +
-      '</div>'
-    ).join('');
-  }
-
-  async function handleSubmit() {
-    const sn      = getSN();
-    const name    = document.getElementById('name').value.trim();
-    const surname = document.getElementById('surname').value.trim();
-    const age     = document.getElementById('age').value.trim();
-    const timeVal = document.getElementById('timeField').value;
-    const dateVal = document.getElementById('dateField').value;
-    const time    = timeVal || '';
-    const date    = getDisplayDate(dateVal);
-
-    if (!name || !surname || !age) {
-      showStatus('⚠️ กรุณากรอกข้อมูลให้ครบ (ชื่อ, นามสกุล, อายุ)', 'err');
-      return;
-    }
-    if (!timeVal || !dateVal) {
-      showStatus('⚠️ กรุณาเลือกวันที่และเวลา', 'err');
-      return;
-    }
-
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    showStatus('⏳ กำลังบันทึกข้อมูล...', 'loading');
-
-    const payload = { sn, name, surname, age, time, date };
-
-    try {
-      await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      records.push(payload);
-      renderRecords();
-      showStatus('✅ บันทึก ' + sn + ' สำเร็จ!', 'ok');
-
-      // auto increment SN
-      const snEl = document.getElementById('snNum');
-      snEl.value = parseInt(snEl.value) + 1;
-      updateSnPreview();
-
-      document.getElementById('name').value = '';
-      document.getElementById('surname').value = '';
-      document.getElementById('age').value = '';
-    } catch(e) {
-      showStatus('❌ เกิดข้อผิดพลาด: ' + e.message, 'err');
-    }
-
-    btn.disabled = false;
-  }
-
-  // init
-  setNowTime();
-  setNowDate();
-  updateSnPreview();
+// ─── INIT ───
+setRole('doctor');
 </script>
 </body>
 </html>

@@ -519,7 +519,7 @@ td.cb-cell input[type=checkbox]{
 
 <script>
 // ─── CONFIG ───
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwubTygLJvg0XEhQTDt78YnyvP-AV_GYahsXgqBC0DkcoIIYM5ruovKVNGrZ2p7PzFq5g/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrvjEDayIwFRbxJ7_4LIxrhynQ1n6Hdy5R317eNjHMTaiYzIyr7G4B9xLiRk4sKy1TLQ/exec';
 
 // ─── USERS ───
 const USERS = {
@@ -748,16 +748,45 @@ async function syncToSheets() {
   status.className='sync-status';
   status.textContent='⏳ กำลัง Sync...';
   try {
-    await fetch(SCRIPT_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ type:'opd_batch', rows, syncedBy: currentUser.name })
+    const payload = JSON.stringify({ type:'opd_batch', rows: rows, syncedBy: currentUser.name });
+
+    // ใช้ form POST เพื่อหลีก CORS preflight
+    await new Promise((resolve, reject) => {
+      const iframe = document.createElement('iframe');
+      iframe.name = 'sync_frame_'+Date.now();
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = SCRIPT_URL;
+      form.target = iframe.name;
+      form.style.display = 'none';
+
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'data';
+      input.value = payload;
+      form.appendChild(input);
+      document.body.appendChild(form);
+
+      iframe.onload = () => {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+        resolve();
+      };
+      iframe.onerror = reject;
+
+      form.submit();
+      // timeout fallback
+      setTimeout(resolve, 5000);
     });
+
     status.className='sync-status ok';
     status.textContent='✓ Sync สำเร็จ '+new Date().toLocaleTimeString('th-TH');
   } catch(e) {
     status.className='sync-status err';
-    status.textContent='✗ Sync ล้มเหลว';
+    status.textContent='✗ Sync ล้มเหลว: '+e.message;
   }
 }
 
